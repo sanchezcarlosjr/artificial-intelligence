@@ -100,6 +100,79 @@ def tinyMazeSearch(problem):
     return  [s, s, w, s, w, w, s, w]
 
 
+
+import math
+class State:
+    def __init__(self, problem, distance, state, action=None, cost=None, previous_state=None):
+        self.problem = problem
+        self.distance = distance
+        self.state = state
+        self.action = action
+        self.cost = cost
+        self.previous_state = previous_state
+    def __hash__(self):
+        return hash(self.state)
+    def __eq__(self, other):
+      if not isinstance(other, type(self)): return NotImplemented
+      return self.state == other.state
+    def is_goal(self):
+        return self.problem.isGoalState(self.state)
+    def expand(self):
+        return self.problem.expand(self.state)
+    def build(self, child):
+        return State(self.problem, math.inf, child[0], child[1], child[2], self)
+    def relax(self, child):
+        new_distance = child.cost+self.distance
+        if new_distance >= child.distance:
+            return False
+        child.distance = new_distance
+        child.previous_state = self
+        return True
+    def reconstruct_path(self):
+        path = []
+        node = self
+        while node.action is not None:
+              path.insert(0, node.action)
+              node = node.previous_state
+        return path
+
+class Frontier:
+    def pop():
+        util.raiseNotDefined()
+    def push(state):
+        util.raiseNotDefined()
+    def isEmpty():
+        util.raiseNotDefined()
+
+class AStarFrontier(Frontier):
+    def __init__(self, problem, heuristic):
+        self.heuristic = heuristic
+        self.problem = problem
+        self.queue = util.PriorityQueue()
+    def pop(self):
+        return self.queue.pop()
+    def isEmpty(self):
+        return self.queue.isEmpty()
+    def push(self,state):
+        estimatedForwardCost = state.distance + self.heuristic(state.state, self.problem)
+        return self.queue.push(state, estimatedForwardCost)
+
+def findPlanFor(problem, frontier):
+    frontier.push(State(problem,0,problem.getStartState()))
+    visited = set()
+    while not frontier.isEmpty():
+        state = frontier.pop()
+        if state.is_goal():
+            return state.reconstruct_path()
+        if state not in visited:
+            visited.add(state)
+            for child in state.expand():
+                new_state = state.build(child)
+                state.relax(new_state)
+                frontier.push(new_state)
+    return []
+
+
 def depthFirstSearch(problem):
     """
     Search the deepest nodes in the search tree first.
@@ -113,13 +186,11 @@ def depthFirstSearch(problem):
     print("Start:", problem.getStartState())
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return findPlanFor(problem, util.Stack())
 
 def breadthFirstSearch(problem):
     """Search the shallowest nodes in the search tree first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return findPlanFor(problem, util.Queue())
 
 def nullHeuristic(state, problem=None):
     """
@@ -130,8 +201,7 @@ def nullHeuristic(state, problem=None):
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first."""
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    return findPlanFor(problem, AStarFrontier(problem, heuristic))
 
 
 # Abbreviations
