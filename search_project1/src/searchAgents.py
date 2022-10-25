@@ -307,12 +307,7 @@ class CornersProblem(search.SearchProblem):
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
         # Please add any code here which you would like to use
         # in initializing the problem
-        "*** YOUR CODE HERE ***"
         self.mapper = {corner:2**index for index,corner in enumerate(self.corners)}
-        self.expected = 0
-        f = lambda x: x[0]+5*x[1]
-        for corner in self.corners:
-            self.expected |= 2**f(corner)
         n =  len(self.corners)-1
         self.total = 2**n+2**n-1
 
@@ -374,7 +369,6 @@ class CornersProblem(search.SearchProblem):
         nextx, nexty = int(x + dx), int(y + dy)
         location = (nextx, nexty)
         dcorner = self.mapper[location] if location in self.mapper else 0x0000
-        print(2**(location[0]+5*location[1]))
         return (location, state[1]|dcorner)
 
     def getCostOfActionSequence(self, actions):
