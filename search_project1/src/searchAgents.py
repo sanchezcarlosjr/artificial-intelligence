@@ -518,6 +518,7 @@ class AStarFoodSearchAgent(SearchAgent):
         self.searchFunction = lambda prob: search.aStarSearch(prob, foodHeuristic)
         self.searchType = FoodSearchProblem
 
+
 def foodHeuristic(state, problem):
     """
     Your heuristic for the FoodSearchProblem goes here.
@@ -546,9 +547,32 @@ def foodHeuristic(state, problem):
     Subsequent calls to this heuristic can access
     problem.heuristicInfo['wallCount']
     """
-    position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    return 0
+    return mazeDistHeuristic(state, problem)
+
+
+def dist(a, b, cache, gameState):
+    a, b = (b,a) if a > b else (a,b)
+    if (a,b) in cache:
+        return cache[(a,b)]
+    distance = mazeDistance(a,b, gameState)
+    cache[(a,b)] = distance
+    return distance
+
+from itertools import combinations
+def mazeDistHeuristic(state, problem):
+    """ Heuristic measures nearest food concentration from pacman, 
+        minimizing nearest point and maximing the farhest point.
+        janluke's solution expands 795 nodes in 0.8 seconds.
+        My solution expands 801 nodes in 0.3 seconds.
+        https://github.com/janluke/cs188/tree/master/cs188/p1_search
+    """
+    pacman, foodGrid = state
+    food = foodGrid.asList()
+    dist_pacman_to_nearest_food = min(
+            (util.manhattanDistance(pacman, dot) for dot in food), default=0)
+    dist_food_to_farthest_food = max(
+            (dist(x, y, problem.heuristicInfo, problem.startingGameState) for x, y in combinations(food, 2)), default=0)
+    return dist_pacman_to_nearest_food + dist_food_to_farthest_food
 
 class ClosestDotSearchAgent(SearchAgent):
     "Search for all food using a sequence of searches"
@@ -578,8 +602,8 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        shortest_path = search.bfs(problem)
+        return shortest_path
 
 class AnyFoodSearchProblem(PositionSearchProblem):
     """
@@ -613,15 +637,24 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         complete the problem definition.
         """
         x,y = state
-
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return self.food[x][y]
 
 def mazeDistance(point1, point2, gameState):
     """
     Returns the maze distance between any two points, using the search functions
     you have already built. The gameState can be any game state -- Pacman's
     position in that state is ignored.
+
+    Distance (graph theory) is the the sum of costs between two nodes in the shorest path.
+    Example 1:
+    A --5-- B --8-- C
+    Distance is 13.
+    Example 2:
+    A ----- B ---- C
+    Distance is 2. Trivially, if edges doesn't have costs, you can assign them 1 or count the number of edges.
+
+    Of course, the hardest path is finding the shorest path. BFS and DFS works when edge's cost is 1.
+    Here, we use BFS.
 
     Example usage: mazeDistance( (2,4), (5,6), gameState)
 
@@ -633,4 +666,6 @@ def mazeDistance(point1, point2, gameState):
     assert not walls[x1][y1], 'point1 is a wall: ' + str(point1)
     assert not walls[x2][y2], 'point2 is a wall: ' + str(point2)
     prob = PositionSearchProblem(gameState, start=point1, goal=point2, warn=False, visualize=False)
-    return len(search.bfs(prob))
+    shortest_path = search.bfs(prob)
+    number_of_edges_in_shortest_path = len(shortest_path)
+    return number_of_edges_in_shortest_path
