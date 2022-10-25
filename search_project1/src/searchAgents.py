@@ -308,15 +308,14 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         self.mapper = {corner:2**index for index,corner in enumerate(self.corners)}
-        n =  len(self.corners)-1
-        self.total = 2**n+2**n-1
+        self.total = 2**len(self.corners)-1
 
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        return (self.startingPosition, 0x0)
+        return (self.startingPosition, 0)
 
     def isGoalState(self, state):
         """
@@ -371,6 +370,19 @@ class CornersProblem(search.SearchProblem):
         dcorner = self.mapper[location] if location in self.mapper else 0x0000
         return (location, state[1]|dcorner)
 
+    def get_nonvisited_corners(self, state):
+        corners = state[1]
+        n=corners^self.total
+        i=self.total+1>>1
+        j=0
+        nonvisited_corners = []
+        while i > 0:
+            if n&i != 0:
+                nonvisited_corners.append(self.corners[len(self.corners)-1-j])
+            i = i >> 1
+            j += 1
+        return nonvisited_corners
+
     def getCostOfActionSequence(self, actions):
         """
         Returns the cost of a particular sequence of actions.  If those actions
@@ -384,7 +396,27 @@ class CornersProblem(search.SearchProblem):
             if self.walls[x][y]: return 999999
         return len(actions)
 
+import math
 
+def distanceArgmin(pos, points):
+    index, dist = None, math.inf
+    for i, point in enumerate(points):
+        d = util.manhattanDistance(pos, point)
+        if d < dist:
+            index, dist = i, d
+    return index, dist
+
+def optimalPathWithoutWalls(fromPos, points):
+    pos, pathLength = fromPos, 0
+    while points != []:
+        index, dist = distanceArgmin(pos, points)
+        pathLength += dist
+        pos = points[index]
+        points.pop(index)
+
+    return pathLength
+
+# Credits https://github.com/DylanCope/CS188-Search
 def cornersHeuristic(state, problem):
     """
     A heuristic for the CornersProblem that you defined.
@@ -398,12 +430,10 @@ def cornersHeuristic(state, problem):
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
     """
-    corners = problem.corners # These are the corner coordinates
-    walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
-
-    "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
-
+    position, corners = state
+    unvisitedCorners = problem.get_nonvisited_corners(state)
+    return optimalPathWithoutWalls(position, unvisitedCorners)
+   
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"
     def __init__(self):
