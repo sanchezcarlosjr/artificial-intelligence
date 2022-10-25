@@ -308,21 +308,26 @@ class CornersProblem(search.SearchProblem):
         # Please add any code here which you would like to use
         # in initializing the problem
         "*** YOUR CODE HERE ***"
+        self.mapper = {corner:2**index for index,corner in enumerate(self.corners)}
+        self.expected = 0
+        f = lambda x: x[0]+5*x[1]
+        for corner in self.corners:
+            self.expected |= 2**f(corner)
+        n =  len(self.corners)-1
+        self.total = 2**n+2**n-1
 
     def getStartState(self):
         """
         Returns the start state (in your state space, not the full Pacman state
         space)
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return (self.startingPosition, 0x0)
 
     def isGoalState(self, state):
         """
         Returns whether this search state is a goal state of the problem.
         """
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return state[1] == self.total
 
     def expand(self, state):
         """
@@ -338,8 +343,9 @@ class CornersProblem(search.SearchProblem):
         children = []
         for action in self.getActions(state):
             # Add a child state to the child list if the action is legal
-            # You should call getActions, getActionCost, and getNextState.
-            "*** YOUR CODE HERE ***"
+            next_state = self.getNextState(state, action)
+            cost = self.getActionCost(state, action, next_state)
+            children.append((next_state, action, cost))
 
         self._expanded += 1 # DO NOT CHANGE
         return children
@@ -366,8 +372,10 @@ class CornersProblem(search.SearchProblem):
         x, y = state[0]
         dx, dy = Actions.directionToVector(action)
         nextx, nexty = int(x + dx), int(y + dy)
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        location = (nextx, nexty)
+        dcorner = self.mapper[location] if location in self.mapper else 0x0000
+        print(2**(location[0]+5*location[1]))
+        return (location, state[1]|dcorner)
 
     def getCostOfActionSequence(self, actions):
         """
