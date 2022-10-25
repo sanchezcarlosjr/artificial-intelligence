@@ -305,8 +305,7 @@ class CornersProblem(search.SearchProblem):
             if not startingGameState.hasFood(*corner):
                 print('Warning: no food in corner ' + str(corner))
         self._expanded = 0 # DO NOT CHANGE; Number of search nodes expanded
-        # Please add any code here which you would like to use
-        # in initializing the problem
+        # Making a set using bitwise operations
         self.mapper = {corner:2**index for index,corner in enumerate(self.corners)}
         self.total = 2**len(self.corners)-1
 
