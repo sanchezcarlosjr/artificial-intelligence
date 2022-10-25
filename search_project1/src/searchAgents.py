@@ -429,6 +429,8 @@ def cornersHeuristic(state, problem):
     This function should always return a number that is a lower bound on the
     shortest path from the state to a goal of the problem; i.e.  it should be
     admissible (as well as consistent).
+
+    It finds optimal path making combinations points.
     """
     position, corners = state
     unvisitedCorners = problem.get_nonvisited_corners(state)
