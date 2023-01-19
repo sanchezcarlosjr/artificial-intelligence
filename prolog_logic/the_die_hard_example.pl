@@ -24,18 +24,26 @@ arc(state(A,B), state(A,3)) :- A >= 0, 5 >= A, B >= 0, 3 >= B.
 arc(state(A,B), state(5,B)) :- A >= 0, 5 >= A, B >= 0, 3 >= B.
 
 /* Empty the jugs */ 
-arc(state(A,B), state(0,B)) :- A >= 0, 5 >= A, B >= 0, 3 >= B.
-arc(state(A,B), state(A,0)) :- A >= 0, 5 >= A, B >= 0, 3 >= B.
+arc(state(A,B), state(0,B)) :- A > 0, 5 >= A, B >= 0, 3 >= B.
+arc(state(A,B), state(A,0)) :- A > 0, 5 >= A, B >= 0, 3 >= B.
 
 /* Fill the jugs from each other. */
-arc(state(A,B), state(0,Z)) :- 3 >= A+B, Z is A+B.
-arc(state(A,B), state(Z,3)) :- A >= 0, 5 >= A, B >= 0, 3 >= B, A+B > 3, Z is A-(3-B).
+ arc(state(A,B), state(0,Z)) :- 3 >= A+B, Z is A+B, Z > 0.
+arc(state(A,B), state(Z,3)) :- A > 0, 5 >= A, B > 0, 3 >= B, A+B > 3, Z is A-(3-B).
 
 
-
-recognize(State) :- final(State).
-recognize(State) :- arc(State, NewState), recognize(NewState).
-
-
+/* No works.  */
+recognize(State) :- final(State), !.
+recognize(State) :- arc(State, NewState), State \= NewState.
 
 
+/*
+?- start(Start), arc(Start, A), arc(A, B), arc(B, C), arc(C, D), arc(D, E), arc(E,F), final(F).
+Start = state(0, 0),
+A = state(5, 0),
+B = state(2, 3),
+C = state(2, 0),
+D = state(0, 2),
+E = state(5, 2),
+F = state(4, 3).
+*/
