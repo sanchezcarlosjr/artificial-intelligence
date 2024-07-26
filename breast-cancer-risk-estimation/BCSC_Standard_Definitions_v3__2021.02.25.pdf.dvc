@@ -1,0 +1,13 @@
+md5: 28532c2c413e189ec3557ed58554bf31
+frozen: true
+deps:
+- checksum: '"e0b17c21c1bd71:0"'
+  size: 344608
+  hash: md5
+  path: 
+    https://www.bcsc-research.org/application/files/8916/1429/0214/BCSC_Standard_Definitions_v3__2021.02.25.pdf
+outs:
+- md5: 3f5540c303d6b09f372b0ce69fd22199
+  size: 344608
+  hash: md5
+  path: BCSC_Standard_Definitions_v3__2021.02.25.pdf

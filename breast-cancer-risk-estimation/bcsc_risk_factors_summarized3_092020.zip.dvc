@@ -1,0 +1,13 @@
+md5: 45d4c4afca6540095ad63943d68dcd3a
+frozen: true
+deps:
+- checksum: '"739a4d2e4a90d61:0"'
+  size: 1785110
+  hash: md5
+  path: 
+    https://www.bcsc-research.org/application/files/5816/0071/5133/bcsc_risk_factors_summarized3_092020.zip
+outs:
+- md5: b273733a90e52ff68f685e4bcb6da345
+  size: 1785110
+  hash: md5
+  path: bcsc_risk_factors_summarized3_092020.zip
