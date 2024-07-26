@@ -1,6 +1,8 @@
 import sys
 import functools
 
+# Top-Down Levenshtein distance
+# The Levenshtein distance is a string metric for measuring the difference between two sequences.
 def computeEditDistance(s, t):
     @functools.cache
     def recurse(m, n):
@@ -9,10 +11,8 @@ def computeEditDistance(s, t):
         - first m letters of s
         - first n letters of t
         """
-        if m == 0:
-            return n
-        if n == 0:
-            return m
+        if min(m, n) == 0:
+            return max(m,n)
         if s[m-1] == t[n-1]:
             return recurse(m-1, n-1)
         subCost = 1 + recurse(m-1, n-1)
