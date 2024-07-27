@@ -1,0 +1,5 @@
+outs:
+- md5: 6effa8e84f04ae2b3866c8f2710e549b
+  size: 15443782
+  hash: md5
+  path: bcsc_risk_factors_summarized1_092020.csv
